@@ -1,0 +1,12 @@
+{
+  "name": "the-love-in-world",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "cucumber-js"
+  },
+  "keywords": [],
+  "author": "Jonas Bette, Diong Aketi Païzanos Christos, Gobert Thomas",
+  "license": "ISC"
+}
