@@ -3,11 +3,14 @@ Fonctionnalité: connexion au site
     Scénario: l'utilisateur n'a pas de compte
         Soit l'utilisateur est sur la page d'accueil
         Et l'utilisateur donne une adresse e-mail incorrecte
-        # Je pense que c'est mieux de mettre "inexistante" à la place de "incorrecte"
         Et l'utilisateur donne un mdp
         Quand l'utilisateur appuie sur le bouton de connexion
         Alors l'utilisateur reste sur la page d'accueil
         Et un message d'erreur est envoyé
+
+    Scénario: l'utilisateur n'a pas de compte et va donc en créer un
+        Soit l'utilisateur clique sur le bouton "Première connection"
+        Alors l'utilisateur est envoyé sur une nouvelle page
 
     Scénario: l'utilisateur donne un mauvais mdp
         Soit l'utilisateur est sur la page d'accueil
