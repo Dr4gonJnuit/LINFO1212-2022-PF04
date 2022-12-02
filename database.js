@@ -23,8 +23,11 @@ User.init({
     username: {
         type: DataTypes.TEXT,
         primaryKey: true
-    }
-}, { sequelize });
+    },
+}, {
+    sequelize,
+    modelName: 'Users'
+});
 
 Message.init({
     id: {
@@ -43,7 +46,10 @@ Message.init({
         type: DataTypes.DATE,
         allowNull: false
     }
-}, { sequelize });
+}, {
+    sequelize,
+    modelName: 'Messages'
+});
 
 /*
 * faire attention au morceau de la base ci-dessous
@@ -66,6 +72,7 @@ Contact.init({
             key: 'username'
         }
     }
-}, { sequelize });
-
-sequelize.sync()
+}, {
+    sequelize,
+    modelName: 'Contacts'
+});
