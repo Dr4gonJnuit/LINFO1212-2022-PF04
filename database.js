@@ -1,13 +1,15 @@
-const {Sequelize, DataTypes, Model} = require('sequelize')
+const {Sequelize, DataTypes, Model} = require('sequelize');
 
 const sequelize = new Sequelize({
     dialect: "sqlite",
-    storage: "projetfinal.sqlite"
-})
+    storage: "database/projetfinal.sqlite"
+});
 
-class User extends Model{}
-class Message extends Model{}
-class Contact extends Model{}
+class User extends Model{};
+
+class Message extends Model{};
+
+class Contact extends Model{};
 
 User.init({
     email: {
@@ -21,16 +23,8 @@ User.init({
     username: {
         type: DataTypes.TEXT,
         primaryKey: true
-    },
-    account: {
-        type: DataTypes.TEXT,
-        primaryKey: true,
-        references: {
-            model: Account,
-            key: email
-        }
     }
-})
+}, { sequelize });
 
 Message.init({
     id: {
@@ -38,7 +32,7 @@ Message.init({
         primaryKey: true,
         references: {
             model: User,
-            key: username
+            key: 'username'
         }
     },
     msg: {
@@ -49,18 +43,19 @@ Message.init({
         type: DataTypes.DATE,
         allowNull: false
     }
-})
+}, { sequelize });
 
 /*
-à améliorer
-
+* faire attention au morceau de la base ci-dessous
+* changement possible !!
+*/
 Contact.init({
     id: {
         type: DataTypes.TEXT,
         primaryKey: true,
         references: {
             model: User,
-            key: username
+            key: 'username'
         }
     },
     known: {
@@ -68,8 +63,9 @@ Contact.init({
         primaryKey: true,
         references: {
             model: User,
-            key: username
+            key: 'username'
         }
     }
-})
-*/
+}, { sequelize });
+
+sequelize.sync()

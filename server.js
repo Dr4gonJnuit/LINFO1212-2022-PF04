@@ -16,6 +16,14 @@ app.set('view engine', 'ejs');
 app.set('views', __dirname + '/static');
 app.use(express.static(__dirname + "/static"))
 
+// test de la connection à la DB
+try {
+    dbs.sequelize.authenticate();
+    console.log('La connection à la DB a été correctement établie.');
+} catch (error) {
+    console.error('La connection à la DB n\'a pas pu être correctement établie :', error);
+}
+
 // chargement et utilisation des sessions
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(session({
