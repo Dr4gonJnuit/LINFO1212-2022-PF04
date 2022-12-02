@@ -30,6 +30,9 @@ User.init({
             key: email
         }
     }
+}, {
+    sequelize,
+    modelName: 'User'
 })
 
 Message.init({
@@ -49,6 +52,9 @@ Message.init({
         type: DataTypes.DATE,
         allowNull: false
     }
+}, {
+    sequelize,
+    modelName: 'Message'
 })
 
 /*
@@ -71,5 +77,8 @@ Contact.init({
             key: username
         }
     }
+}, {
+    sequelize,
+    modelName: 'Contact'
 })
 */
