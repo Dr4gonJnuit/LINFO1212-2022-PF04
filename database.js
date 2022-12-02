@@ -22,14 +22,6 @@ User.init({
         type: DataTypes.TEXT,
         primaryKey: true
     },
-    account: {
-        type: DataTypes.TEXT,
-        primaryKey: true,
-        references: {
-            model: Account,
-            key: email
-        }
-    }
 }, {
     sequelize,
     modelName: 'User'
