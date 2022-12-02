@@ -1,4 +1,5 @@
 const {Sequelize, DataTypes, Model} = require('sequelize');
+var db = {};
 
 const sequelize = new Sequelize({
     dialect: "sqlite",
@@ -76,3 +77,10 @@ Contact.init({
     sequelize,
     modelName: 'Contacts'
 });
+
+db.sequelize = sequelize;
+db.Sequelize = Sequelize;
+
+db.sequelize.sync({force: true});  
+
+module.exports = db;

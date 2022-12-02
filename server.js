@@ -14,7 +14,10 @@ var fs = require('fs');
 // mise en place
 app.set('view engine', 'ejs');
 app.set('views', __dirname + '/static');
-app.use(express.static(__dirname + "/static"))
+app.use(express.static(__dirname + "/static"));
+
+// chargement de la base de données 
+const dbs = require(__dirname + "/database.js");
 
 // test de la connection à la DB
 try {
