@@ -8,11 +8,15 @@ const sequelize = new Sequelize({
 
 class User extends Model{};
 
-class Message extends Model{};
-
 class Contact extends Model{};
 
+class Message extends Model{};
+
 User.init({
+    username: {
+        type: DataTypes.TEXT,
+        primaryKey: true
+    },
     email: {
         type: DataTypes.TEXT,
         primaryKey: true
@@ -20,36 +24,10 @@ User.init({
     pswd: {
         type: DataTypes.TEXT,
         allowNull: false
-    },
-    username: {
-        type: DataTypes.TEXT,
-        primaryKey: true
-    },
-}, {
-    sequelize,
-    modelName: 'Users'
-});
-
-Message.init({
-    id: {
-        type: DataTypes.TEXT,
-        primaryKey: true,
-        references: {
-            model: User,
-            key: 'username'
-        }
-    },
-    msg: {
-        type: DataTypes.TEXT,
-        allowNull: false,
-    },
-    snd_time: {
-        type: DataTypes.DATE,
-        allowNull: false
     }
 }, {
     sequelize,
-    modelName: 'Messages'
+    modelName: 'Users'
 });
 
 /*
@@ -76,6 +54,35 @@ Contact.init({
 }, {
     sequelize,
     modelName: 'Contacts'
+});
+
+Message.init({
+    id: {
+        type: DataTypes.TEXT,
+        primaryKey: true,
+        references: {
+            model: User,
+            key: 'username'
+        }
+    },
+    msg: {
+        type: DataTypes.TEXT,
+        allowNull: false,
+    },
+    snd_time: {
+        type: DataTypes.DATE,
+        allowNull: false
+    },
+    to_send: {
+        type: DataTypes.TEXT,
+        references: {
+            model: Contact,
+            key: 'known'
+        }
+    }
+}, {
+    sequelize,
+    modelName: 'Messages'
 });
 
 db.sequelize = sequelize;
