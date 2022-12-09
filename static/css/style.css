@@ -1,3 +1,32 @@
 body {
     background-color: rgb(190, 44, 44);
 }
+
+/* Classes */
+.center {
+    text-align: center;
+}
+
+.container {
+    width: auto;
+}
+
+/* Id */
+#contacts {
+    float: left;
+    margin-top: 60px;
+    margin-left: 100px;
+    width: 200px;
+    border: 5px solid #000;
+    background-color: white;
+}
+
+#messages {
+    float: right;
+    margin-top: 60px;
+    margin-right: 250px;
+    width: 800px;
+    height: 500px;
+    border: 5px solid #000;
+    background-color: white;
+}
