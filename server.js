@@ -44,11 +44,22 @@ app.get('/', function (req, res) {
     res.render('home.ejs')
 });
 
+app.get('/user_page', function (req, res) {
+    res.render('user_page.ejs')
+});
+
+app.get('/login', function (req, res) {
+    res.render('login.ejs')
+});
+
+app.get('/recherche', function (req, res) {
+    res.render('recherche.ejs')
+});
+
 // lancement du server
 https.createServer({
     key: fs.readFileSync(__dirname + '/static/key/key.pem'),
     cert: fs.readFileSync(__dirname + '/static/key/cert.pem'),
     passphrase: 'ingi'
 }, app).listen(8080);
-console.log('Server connected');
-console.log('Go to https://localhost:8080');
+console.log('Server connected\nGo to https://localhost:8080');
