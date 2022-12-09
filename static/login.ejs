@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <%- include('partial/head.ejs'); %>
+    </head>
+    <body>
+        <form action="newUser" method="post">
+            <input type="text" name="username" required>
+            <br>
+            <input type="email" name="e-mail" required>
+            <br><br>
+            <input type="password" name="mdp" required>
+            <br>
+            <input type="password" name="mdpCopy" required> 
+            <br>
+            <button type="submit">Créer un compte</button>
+        </form>
+    </body>
+</html>
