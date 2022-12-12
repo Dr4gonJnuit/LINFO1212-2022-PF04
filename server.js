@@ -44,14 +44,71 @@ app.get('/', function (req, res) {
     res.render('home.ejs')
 });
 
+// page de l'utilisateur
 app.get('/user_page', function (req, res) {
     res.render('user_page.ejs')
 });
 
+// page de connection
 app.get('/login', function (req, res) {
     res.render('login.ejs')
 });
 
+// création du compte
+app.post('/newUser', async (req, res) => {
+
+    const user = await dbs.users.findOne({ where: { username: req.body.username } });
+    console.log(user);
+    const email = await dbs.users.findOne({ where: { email: req.body.email } });
+    console.log(email);
+
+    // vérification du nom
+    if (user === null) {
+
+        // vérification du mail
+        if (email === null) {
+            let newUser = await dbs.users.create({ 
+                username: req.body.username,
+                email: req.body.email,
+                pswd: req.body.mdp
+            });
+            console.log("None error : " + newUser.username);
+            req.session.username = req.body.username;
+            req.session.notif = "Bienvenue sur notre site " + req.session.username + " !";
+            console.log('connected')
+            res.redirect('/user_page');
+        } else {
+            req.session.notif = "L'e-mail que vous avez choisi : '" + req.body.email + "' est déjà Utilisée.";
+            console.log('email error');
+            res.redirect("/login");
+        }
+    } else {
+        req.session.notif = "Le nom d'utilisateur que vous avez choisi : '" + req.body.fname + "' est déjà pris, veuillez en choisir un nouveau.";
+        console.log('name error');
+        res.redirect("/login");
+    }
+});
+
+// connection
+app.post('/connection', async (req, res) => {
+
+    const utilisateurConnect = await dbs.users.findOne({ where: { username: req.body.username } });
+
+    if (utilisateurConnect !== null) {
+        if (utilisateurConnect.pswd === req.body.pswd) {
+            req.session.username = req.body.username;
+            res.redirect('user_page');
+        } else {
+            req.session.notif = "Nom d'utilisateur inexistant ou mauvais mot de passe.";
+            res.redirect('/');
+        }
+    } else {
+        req.session.notif = "Nom d'utilisateur inexistant ou mauvais mot de passe.";
+        res.redirect('/');
+    }
+});
+
+// page de recherche de partenaire
 app.get('/recherche', function (req, res) {
     res.render('recherche.ejs')
 });

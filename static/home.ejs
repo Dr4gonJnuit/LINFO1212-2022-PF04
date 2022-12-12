@@ -16,14 +16,17 @@
         </h1>
 
         <div class="center">
-            <button style="text-align: center;">Première connection</button>
+            <a href="/login" class="button">Première connection</a>
         </div>
 
         <p class="center">Déjà un compte :</p>
 
         <div class="center">
-            <input type="email" id="mail"> <br>
-            <input type="password" id="pswd">
+            <form action="connection" method="post">
+                <input type="text" name="username">
+                <br>
+                <input type="password" name="pswd">
+            </form>
         </div>
 
     </body>
