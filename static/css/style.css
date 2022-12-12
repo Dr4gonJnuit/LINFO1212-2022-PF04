@@ -2,16 +2,23 @@ body {
     background-color: rgb(190, 44, 44);
 }
 
-/* Classes */
+/* classes */
 .center {
     text-align: center;
+}
+
+.button {
+    background-color: #fff;
+    border: 2px solid #000;
+    text-decoration: none;
+    color: initial;
 }
 
 .container {
     width: auto;
 }
 
-/* Id */
+/* id */
 #contacts {
     float: left;
     margin-top: 60px;

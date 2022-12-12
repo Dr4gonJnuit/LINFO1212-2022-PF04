@@ -1,3 +1,4 @@
+const { name } = require('ejs');
 const {Sequelize, DataTypes, Model} = require('sequelize');
 var db = {};
 
@@ -87,6 +88,8 @@ Message.init({
 
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
+
+db.users = User;
 
 db.sequelize.sync({force: true});  
 
