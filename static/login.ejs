@@ -2,12 +2,14 @@
 <html>
     <head>
         <%- include('partial/head.ejs'); %>
+        <script type="text/javascript" src="js/ajout_c.js"></script>
     </head>
+
     <body>
         <form action="newUser" method="post">
             <input type="text" name="username" required>
             <br>
-            <input type="email" name="e-mail" required>
+            <input type="email" name="email" required>
             <br><br>
             <input type="password" name="mdp" required>
             <br>
@@ -15,5 +17,15 @@
             <br>
             <button type="submit">Créer un compte</button>
         </form>
+
+        <form action="" method="post">
+            <select name="characteristic" id="characteristic-select">
+                <option value="good">Gentil</option>
+                <option value="bad">Méchant</option>
+            </select>
+            
+        </form>
+        <button onclick="ajout_c(document.getElementById('characteristic-select').value)">test</button>
+        <div id="chara_poss"></div>
     </body>
 </html>
