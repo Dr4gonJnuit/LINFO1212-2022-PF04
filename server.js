@@ -118,7 +118,7 @@ app.post('/addCharToUser', async (req, res) => {
         let newChara = await dbs.chara.create({
             name: req.body.characteristic
         });
-        res.redirect('/login', chara: );
+        res.redirect('/login', chara);
     } else {
         req.session.notif = "Vous avez déjà cette charactéristique.";
         res.redirect('/user_page');
