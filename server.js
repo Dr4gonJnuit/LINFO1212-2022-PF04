@@ -108,6 +108,24 @@ app.post('/connection', async (req, res) => {
     }
 });
 
+
+// doesn't work I think
+app.post('/addCharToUser', async (req, res) => {
+    
+    const characteristique = await dbs.users.findOne({ where: { chara: req.body.characteristic } });
+
+    if (characteristique === null) {
+        let newChara = await dbs.chara.create({
+            name: req.body.characteristic
+        });
+        res.redirect('/login', chara: );
+    } else {
+        req.session.notif = "Vous avez déjà cette charactéristique.";
+        res.redirect('/user_page');
+    }
+});
+//
+
 // page de recherche de partenaire
 app.get('/recherche', function (req, res) {
     res.render('recherche.ejs')

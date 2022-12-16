@@ -19,14 +19,15 @@
             <button type="submit">Créer un compte</button>
         </form>
 
-        <form action="" method="post">
+        <form action="addCharToUser" method="post">
             <select name="characteristic" id="characteristic-select">
-                <option value="good">Gentil</option>
-                <option value="bad">Méchant</option>
+                <option value="Gentil">Gentil</option>
+                <option value="Méchant">Méchant</option>
             </select>
             
+            <button onclick="ajout_c(document.getElementById('characteristic-select').value)">test</button>
         </form>
-        <button onclick="ajout_c(document.getElementById('characteristic-select').value)">test</button>
+        
         <div id="chara_poss"></div>
     </body>
 </html>
