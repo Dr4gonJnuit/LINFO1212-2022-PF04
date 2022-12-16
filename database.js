@@ -7,25 +7,46 @@ const sequelize = new Sequelize({
     storage: "database/projetfinal.sqlite"
 });
 
+class Characteristique extends Model{};
+
 class User extends Model{};
 
 class Contact extends Model{};
 
 class Message extends Model{};
 
+Characteristique.init({
+    name: {
+        type: DataTypes.STRING,
+        primaryKey: true
+    }
+}, {
+    sequelize,
+    modelName: 'Characteristiques'
+});
+
 User.init({
     username: {
-        type: DataTypes.TEXT,
+        type: DataTypes.STRING,
         primaryKey: true
     },
     email: {
-        type: DataTypes.TEXT,
+        type: DataTypes.STRING,
         primaryKey: true
     },
     pswd: {
-        type: DataTypes.TEXT,
+        type: DataTypes.STRING,
         allowNull: false
-    }
+    },
+    chara: [{
+        type: DataTypes.ARRAY(DataTypes.STRING),
+        allowNull: true,
+        defaultValue: [""],
+        references: {
+            model: Characteristique,
+            key: 'name'
+        }
+    }]
 }, {
     sequelize,
     modelName: 'Users'
@@ -37,7 +58,7 @@ User.init({
 */
 Contact.init({
     id: {
-        type: DataTypes.TEXT,
+        type: DataTypes.STRING,
         primaryKey: true,
         references: {
             model: User,
@@ -45,7 +66,7 @@ Contact.init({
         }
     },
     known: {
-        type: DataTypes.TEXT,
+        type: DataTypes.STRING,
         primaryKey: true,
         references: {
             model: User,
@@ -59,7 +80,7 @@ Contact.init({
 
 Message.init({
     id: {
-        type: DataTypes.TEXT,
+        type: DataTypes.STRING,
         primaryKey: true,
         references: {
             model: User,
@@ -67,7 +88,7 @@ Message.init({
         }
     },
     msg: {
-        type: DataTypes.TEXT,
+        type: DataTypes.STRING,
         allowNull: false,
     },
     snd_time: {
@@ -75,7 +96,7 @@ Message.init({
         allowNull: false
     },
     to_send: {
-        type: DataTypes.TEXT,
+        type: DataTypes.STRING,
         references: {
             model: Contact,
             key: 'known'
@@ -90,6 +111,8 @@ db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
 db.users = User;
+
+db.chara = Characteristique;
 
 db.sequelize.sync({force: true});  
 
