@@ -10,6 +10,7 @@ var bodyParser = require("body-parser");
 var session = require('express-session');
 var https = require('https');
 var fs = require('fs');
+//const Bcrypt = require("bcryptjs");  --> Ne fonctionne pas
 
 // mise en place
 app.set('view engine', 'ejs');
@@ -17,7 +18,7 @@ app.set('views', __dirname + '/static');
 app.use(express.static(__dirname + "/static"));
 
 // chargement de la base de données 
-const dbs = require(__dirname + "/database.js");
+const dbs = require("./database.js");
 
 // test de la connection à la DB
 try {
@@ -41,12 +42,32 @@ app.use(session({
 
 // page principale
 app.get('/', function (req, res) {
-    res.render('home.ejs')
+    if(req.session.username){
+        res.render('user_page',{
+            logine: req.session.username,
+            connecte : 'Se déconnecter'
+        })}
+    else{
+        res.render('home', {
+            logine: "Bienvenue sur notre site"
+        })
+    }
 });
 
 // page de l'utilisateur
-app.get('/user_page', function (req, res) {
-    res.render('user_page.ejs')
+app.get('/user_page', async (req, res) => {
+    if(req.session.username){
+        let listContacts = await dbs.contacts.findAll({where : {id : req.session.username}})
+
+
+        res.render('user_page.ejs',{
+            logine: req.session.username,
+            connecte : 'Se déconnecter',
+            listContacts : listContacts
+        })}
+    else{
+        res.render('home')
+    }
 });
 
 // page de connection
@@ -67,16 +88,23 @@ app.post('/newUser', async (req, res) => {
 
         // vérification du mail
         if (email === null) {
-            let newUser = await dbs.users.create({ 
-                username: req.body.username,
-                email: req.body.email,
-                pswd: req.body.mdp
-            });
-            console.log("None error : " + newUser.username);
-            req.session.username = req.body.username;
-            req.session.notif = "Bienvenue sur notre site " + req.session.username + " !";
-            console.log('connected')
-            res.redirect('/user_page');
+            if (req.body.mdp === req.body.mdpCopy){
+                let newUser = await dbs.users.create({ 
+                    username: req.body.username,
+                    email: req.body.email,
+                    pswd: req.body.mdp,
+                    chara: req.body.characteristic
+                });
+                console.log("None error : " + newUser.username);
+                req.session.username = req.body.username;
+                req.session.notif = "Bienvenue sur notre site " + req.session.username + " !";
+                console.log('connected')
+                res.redirect('/user_page');
+            } else {
+                req.session.notif = "Les deux mots de passe ne correspondent pas";
+                console.log('password error');
+                res.redirect("/login"); 
+            }
         } else {
             req.session.notif = "L'e-mail que vous avez choisi : '" + req.body.email + "' est déjà Utilisée.";
             console.log('email error');
@@ -92,18 +120,20 @@ app.post('/newUser', async (req, res) => {
 // connection
 app.post('/connection', async (req, res) => {
 
-    const utilisateurConnect = await dbs.users.findOne({ where: { username: req.body.username } });
+    let user = await dbs.users.findOne({ where: { username: req.body.username } });
 
-    if (utilisateurConnect !== null) {
-        if (utilisateurConnect.pswd === req.body.pswd) {
+    if (user !== null) {
+        if (user.pswd === req.body.mdp) {
             req.session.username = req.body.username;
-            res.redirect('user_page');
+            res.redirect('/user_page');
         } else {
-            req.session.notif = "Nom d'utilisateur inexistant ou mauvais mot de passe.";
+            console.log("Nom d'utilisateur inexistant ou mauvais mot de passe. 1")
+            req.session.notif = "Nom d'utilisateur inexistant ou mauvais mot de passe. ";
             res.redirect('/');
         }
     } else {
-        req.session.notif = "Nom d'utilisateur inexistant ou mauvais mot de passe.";
+        console.log("Nom d'utilisateur inexistant ou mauvais mot de passe. 2")
+        req.session.notif = "Nom d'utilisateur inexistant ou mauvais mot de passe. ";
         res.redirect('/');
     }
 });
@@ -130,6 +160,18 @@ app.post('/addCharToUser', async (req, res) => {
 app.get('/recherche', function (req, res) {
     res.render('recherche.ejs')
 });
+
+// Se déconnecter
+app.get("/disconnect", function(req,res){
+    if (req.session.username === undefined){
+        req.session.notif = "Connectez vous";
+        res.redirect('/login');
+    } else {
+        req.session.username=undefined;
+        req.session.notif = "Merci de votre visite !";
+        res.redirect("/")
+    }
+})
 
 // lancement du server
 https.createServer({

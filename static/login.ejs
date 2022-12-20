@@ -7,26 +7,32 @@
 
     <body>
         <script src='js/daynight'></script>
-        <form action="newUser" method="post">
-            <input type="text" name="username" required>
+        <form action="newUser" method="post" class ="center">
             <br>
-            <input type="email" name="email" required>
+            <label for="username">Entrez votre nom d'utilisateur</label> 
+            <input type="text" name="username" placeholder = "Christos" required>
             <br><br>
+            <label for="email">Entrez votre Email</label>
+            <input type="email" name="email" placeholder = "Christos@123.com" required>
+            <br><br>
+            <label for="mdp">Entrez votre mot de passe</label>
             <input type="password" name="mdp" required>
-            <br>
+            <br><br>
+            <label for="mdpCopy">Entrez à nouveau votre mot de passe</label>
             <input type="password" name="mdpCopy" required> 
-            <br>
-            <button type="submit">Créer un compte</button>
-        </form>
+            <br><br>
 
-        <form action="addCharToUser" method="post">
             <select name="characteristic" id="characteristic-select">
                 <option value="Gentil">Gentil</option>
                 <option value="Méchant">Méchant</option>
-            </select>
-            
-            <button onclick="ajout_c(document.getElementById('characteristic-select').value)">test</button>
+            </select> 
+            <br><br>
+            <button type="submit" >Créer un compte</button>
         </form>
+
+        
+            
+            
         
         <div id="chara_poss"></div>
     </body>

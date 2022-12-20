@@ -7,6 +7,11 @@
     <body>
         <script src='js/daynight'></script>
         <header>
+            <nav class = 'navDeco'> 
+                <a href="deco"> <%= logine %></a>
+                <a href="/disconnect"> <%= connecte %> </a>
+
+            </nav>
             <!-- probably nothing here -->
         </header>
 
@@ -15,44 +20,16 @@
             <div id="contacts">
                 <!-- zone des contacts -->
                 <h1 class="center">Contacts</h1>
-                <p class="center">
-                    Random name original
-                    Random name original
-                    Random name original
-                    Random name original
-                    Random name original
-                    Random name original
-                    Random name original
-                    Random name original
-                    Random name original
-                    Random name original
-                    Random name original
-                    Random name original
-                    Random name original
-                    Random name original
-                    Random name original
-                    Random name original
-                    Random name original
-                    Random name original
-                    Random name original
-                    Random name original
-                    Random name original
-                    Random name original
-                    Random name original
-                    Random name original
-                    Random name original
-                    Random name original
-                    Random name original
-                    Random name original
-                    Random name original
-                    Random name original
-                    Random name original
-                    Random name original
-                </p>
+                
+                <ul>
+                    <% listContacts.forEach(function(contact) { %>
+                        <li> <a href = <!-- Nous ne savons pas quoi mettre ici --> >  Ecrire </a> <%= contact.known %> </li>
+                    <% }); %>
+                </ul>
             </div>
 
             <div id="messages">
-                <!-- zone des messages -->
+                <!-- zone des messages --> 
                 <p>
                     Random funniest message
                     Random funniest message

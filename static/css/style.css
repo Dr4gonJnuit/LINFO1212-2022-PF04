@@ -2,6 +2,21 @@ body {
     background-color: rgb(190, 44, 44);
 }
 
+.navDeco{
+    vertical-align: center;
+    color: #333333;
+    text-decoration: none;
+    font-family: arial black;
+    font-style: bold;
+    text-align: center;
+    font-size: 16px;
+    padding: 25px 50px 25px 50px;
+    margin: 0px -0.5px 0px -0.5px;
+    background-color: azure;
+    border-left: 1px solid #333333;
+    border-right: 1px solid #333333;
+}
+
 /* classes */
 .center {
     text-align: center;

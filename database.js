@@ -111,9 +111,38 @@ db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
 db.users = User;
+db.contacts = Contact;
+db.messages = Message; 
 
 db.chara = Characteristique;
 
-db.sequelize.sync({force: true});  
+//db.sequelize.sync({force: true});
+
+(async () => {
+    await db.sequelize.sync({ force: true });
+  });
+
+const eltcheetos = User.create({ 
+    username: "eltcheetos",
+    email: "paizstos11012001@gmail.com",
+    pswd: "azerty",
+    chara: "Gentil"
+});
+
+console.log(eltcheetos.name);
+
+const barrel = User.create({ 
+    username: "barrel",
+    email: "paizstos@gmail.com",
+    pswd: "azerty",
+    chara: "Gentil"
+});
+
+const contact = Contact.create({
+    id: "eltcheetos",
+    known: "barrel"
+});
+
+  
 
 module.exports = db;

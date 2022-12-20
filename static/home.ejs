@@ -4,6 +4,13 @@
         <%- include('partial/head.ejs'); %>
     </head>
 
+    <header>
+        <nav class = 'navDeco'> 
+            <p><%= logine %><p>
+        </nav>
+        <!-- probably nothing here -->
+    </header>
+
     <body>
         <script src='js/daynight'></script>
         <header>
@@ -24,10 +31,12 @@
 
         <div class="center">
             <form action="connection" method="post">
-                <input type="text" name="username">
-                <br>
-                <input type="password" name="pswd">
-                <br>
+                <label for="username">Entrez votre nom d'utilisateur</label> 
+                <input type="text" name="username" placeholder = "Christos" required>
+                <br><br>
+                <label for="mdp">Entrez votre mot de passe</label>
+                <input type="password" name="mdp" required>
+                <br><br>
                 <!-- faire en sorte que l'user se connecter -->
                 <button type="submit">Connection</button>
             </form>
