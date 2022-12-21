@@ -71,8 +71,16 @@ app.get('/user_page', async (req, res) => {
 });
 
 // page de connection
-app.get('/login', function (req, res) {
-    res.render('login.ejs')
+app.get('/login', async (req, res) => {
+
+    let connected = req.session.username;
+    if (connected) {
+        const chara = await dbs.users.findOne({ where: { username: connected } });
+        res.render('login.ejs', {chara: chara.chara});
+    } else {
+        res.render('login.ejs', {chara: '[]'});
+    }
+    
 });
 
 // création du compte
@@ -93,7 +101,6 @@ app.post('/newUser', async (req, res) => {
                     username: req.body.username,
                     email: req.body.email,
                     pswd: req.body.mdp,
-                    chara: req.body.characteristic
                 });
                 console.log("None error : " + newUser.username);
                 req.session.username = req.body.username;
@@ -139,16 +146,50 @@ app.post('/connection', async (req, res) => {
 });
 
 
-// doesn't work I think
+// doesn't work for now
 app.post('/addCharToUser', async (req, res) => {
     
-    const characteristique = await dbs.users.findOne({ where: { chara: req.body.characteristic } });
+    const characteristiqueUser = await dbs.users.findOne({ username: { chara: req.session.username } });
+    const characteristique = await dbs.char.findOne({ where: { name: req.body.characteristic } });
 
-    if (characteristique === null) {
-        let newChara = await dbs.chara.create({
-            name: req.body.characteristic
+    console.log(req.body.characteristic);
+
+    let verif = true;
+    let arrChar = [];
+
+    console.log(characteristiqueUser.chara);
+
+    if (!(characteristiqueUser.chara === null)) {
+        for (const element of characteristiqueUser.chara) {
+            if (element === req.body.characteristic) {
+                verif = false;
+            }
+            arrChar.push(element);
+            console.log(element);
+            console.log(arrChar);
+        }
+    }
+
+    console.log(arrChar);
+
+    if (verif) {
+        if (characteristique === null) {
+            let newChara = await dbs.char.create({
+                name: req.body.characteristic
+            });
+            console.log("Insertion d'une nouvelle charactéristique");
+        }
+
+        arrChar.push(req.body.characteristic);
+
+        console.log(arrChar);
+
+        let newCharaUser = await dbs.users.update({
+            chara: arrChar
+        }, { 
+            where: { username: req.session.username } 
         });
-        res.redirect('/login', chara);
+        res.redirect('/login');
     } else {
         req.session.notif = "Vous avez déjà cette charactéristique.";
         res.redirect('/user_page');
@@ -167,7 +208,7 @@ app.get("/disconnect", function(req,res){
         req.session.notif = "Connectez vous";
         res.redirect('/login');
     } else {
-        req.session.username=undefined;
+        req.session.username = undefined;
         req.session.notif = "Merci de votre visite !";
         res.redirect("/")
     }

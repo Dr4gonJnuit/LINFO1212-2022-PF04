@@ -38,15 +38,24 @@ User.init({
         type: DataTypes.STRING,
         allowNull: false
     },
-    chara: [{
-        type: DataTypes.ARRAY(DataTypes.STRING),
+    chara: {
+        type: DataTypes.STRING,
         allowNull: true,
-        defaultValue: [""],
+        /*
         references: {
             model: Characteristique,
             key: 'name'
+        },
+        */
+        get() {
+            const value = this.getDataValue('chara');
+
+            return value ? value.split(',') : null;
+        },
+        set(val) {
+            val ? this.setDataValue('chara', val.join(',')) : null;
         }
-    }]
+    }
 }, {
     sequelize,
     modelName: 'Users'
@@ -114,35 +123,48 @@ db.users = User;
 db.contacts = Contact;
 db.messages = Message; 
 
-db.chara = Characteristique;
+db.char = Characteristique;
 
 //db.sequelize.sync({force: true});
-
+/*
 (async () => {
     await db.sequelize.sync({ force: true });
   });
+
+
+const ca = Characteristique.create({
+    name: "Gentil"
+});
+
+const ca2 = Characteristique.create({
+    name: "Méchant"
+});
 
 const eltcheetos = User.create({ 
     username: "eltcheetos",
     email: "paizstos11012001@gmail.com",
     pswd: "azerty",
-    chara: "Gentil"
+    chara: ["Gentil", "Méchant"]
 });
 
 console.log(eltcheetos.name);
-
+/*
 const barrel = User.create({ 
     username: "barrel",
     email: "paizstos@gmail.com",
     pswd: "azerty",
-    chara: "Gentil"
+    chara: "Méchant"
 });
 
+const Jojo = User.create({ 
+    username: "Jojo",
+    email: "test@gmail.com",
+    pswd: "test",
+});
+/*
 const contact = Contact.create({
     id: "eltcheetos",
     known: "barrel"
 });
-
-  
-
+*/
 module.exports = db;
