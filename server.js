@@ -19,6 +19,7 @@ app.use(express.static(__dirname + "/static"));
 
 // chargement de la base de données 
 const dbs = require("./database.js");
+const { Op } = require("sequelize");
 
 // test de la connection à la DB
 try {
@@ -145,11 +146,9 @@ app.post('/connection', async (req, res) => {
     }
 });
 
-
-// doesn't work for now
 app.post('/addCharToUser', async (req, res) => {
     
-    const characteristiqueUser = await dbs.users.findOne({ username: { chara: req.session.username } });
+    const characteristiqueUser = await dbs.users.findOne({ where: { username: req.session.username } });
     const characteristique = await dbs.char.findOne({ where: { name: req.body.characteristic } });
 
     console.log(req.body.characteristic);
@@ -157,7 +156,7 @@ app.post('/addCharToUser', async (req, res) => {
     let verif = true;
     let arrChar = [];
 
-    console.log(characteristiqueUser.chara);
+    console.log("Usr chara" + characteristiqueUser.chara);
 
     if (!(characteristiqueUser.chara === null)) {
         for (const element of characteristiqueUser.chara) {
@@ -181,6 +180,7 @@ app.post('/addCharToUser', async (req, res) => {
         }
 
         arrChar.push(req.body.characteristic);
+        arrChar.sort();
 
         console.log(arrChar);
 
@@ -195,16 +195,74 @@ app.post('/addCharToUser', async (req, res) => {
         res.redirect('/user_page');
     }
 });
-//
 
 // page de recherche de partenaire
 app.get('/recherche', function (req, res) {
-    res.render('recherche.ejs')
+
+    if (req.session.username) {
+        res.render('recherche.ejs', {
+            logine: req.session.username,
+            connecte : 'Se déconnecter',
+            test: null
+        });
+    } else {
+        res.render('home.ejs');
+    }
+});
+
+app.post('/rechPart', async (req, res) => {
+
+    let arrPotenCont = [];
+    let numberOfChara = req.body.number;
+
+    const user = await dbs.users.findOne({ where: { username: req.session.username } });
+
+    const allUser = await dbs.users.findAll({
+        where: {
+            [Op.not] : [
+                { username: req.session.username }
+            ]
+        }
+    });
+
+    if (!(allUser === null)) { 
+        for (const userPot of allUser) {
+
+            if (userPot.chara === null) { continue; }
+
+            let incr = 0;
+            for (const chara of userPot.chara) {
+                for (const charaUser of user.chara) {
+                    if (chara === charaUser) {
+                        incr++;
+                    }
+                }
+                if (numberOfChara <= incr && !arrPotenCont.includes(userPot)) {                    
+                    arrPotenCont.push(userPot);
+                }
+            }
+        }
+    }
+
+    let test = [];
+    for (const iterator of arrPotenCont) {
+        test.push([iterator.username, iterator.chara]);
+    }
+
+    console.log(test);
+
+    res.render('recherche.ejs', {
+        logine: req.session.username,
+        connecte : 'Se déconnecter',
+        test: test 
+    });
+    
 });
 
 // Se déconnecter
-app.get("/disconnect", function(req,res){
-    if (req.session.username === undefined){
+app.get("/disconnect", function(req, res) {
+
+    if (req.session.username === undefined) {
         req.session.notif = "Connectez vous";
         res.redirect('/login');
     } else {
