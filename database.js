@@ -41,12 +41,6 @@ User.init({
     chara: {
         type: DataTypes.STRING,
         allowNull: true,
-        /*
-        references: {
-            model: Characteristique,
-            key: 'name'
-        },
-        */
         get() {
             const value = this.getDataValue('chara');
 
@@ -109,50 +103,6 @@ db.messages = Message;
 
 db.char = Characteristique;
 
-//db.sequelize.sync({force: true});
-/*
-(async () => {
-    await db.sequelize.sync({ force: true });
-  });
-*//*
-const ca = Characteristique.create({
-    name: "Gentil"
-});
-
-const ca2 = Characteristique.create({
-    name: "Méchant"
-});
-
-const eltcheetos = User.create({ 
-    username: "eltcheetos",
-    email: "paizstos11012001@gmail.com",
-    pswd: "azerty",
-    chara: ["Gentil,Méchant"]
-});
-
-const barrel = User.create({ 
-    username: "barrel",
-    email: "paizstos@gmail.com",
-    pswd: "azerty",
-    chara: ["Méchant"]
-});
-
-const Jojo = User.create({ 
-    username: "Jojo",
-    email: "test@gmail.com",
-    pswd: "test"
-});
-
-const Baloo = User.create({
-    username: 'Baloo',
-    email: 'Baloo@ours.com',
-    pswd: 'oursson',
-    chara: ["Gentil,Attentionné,Lent"]
-})
-
-const contact = Contact.create({
-    name: "eltcheetos",
-    known: "barrel"
-});*/
+db.sequelize.sync({force: true});
 
 module.exports = db;
