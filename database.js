@@ -36,7 +36,7 @@ User.init({
     },
     pswd: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: false,
     },
     chara: {
         type: DataTypes.STRING,
@@ -61,26 +61,12 @@ User.init({
     modelName: 'Users'
 });
 
-/*
-* faire attention au morceau de la base ci-dessous
-* changement possible !!
-*/
 Contact.init({
-    id: {
-        type: DataTypes.STRING,
-        primaryKey: true,
-        references: {
-            model: User,
-            key: 'username'
-        }
+    name: {
+        type: DataTypes.STRING
     },
     known: {
-        type: DataTypes.STRING,
-        primaryKey: true,
-        references: {
-            model: User,
-            key: 'username'
-        }
+        type: DataTypes.STRING
     }
 }, {
     sequelize,
@@ -89,12 +75,13 @@ Contact.init({
 
 Message.init({
     id: {
+        type: DataTypes.INTEGER,
+        autoIncrement: true,
+        primaryKey: true
+    },
+    from_send: {
         type: DataTypes.STRING,
-        primaryKey: true,
-        references: {
-            model: User,
-            key: 'username'
-        }
+        allowNull: false,
     },
     msg: {
         type: DataTypes.STRING,
@@ -106,10 +93,7 @@ Message.init({
     },
     to_send: {
         type: DataTypes.STRING,
-        references: {
-            model: Contact,
-            key: 'known'
-        }
+        allowNull: false
     }
 }, {
     sequelize,
@@ -130,8 +114,7 @@ db.char = Characteristique;
 (async () => {
     await db.sequelize.sync({ force: true });
   });
-
-
+*//*
 const ca = Characteristique.create({
     name: "Gentil"
 });
@@ -144,27 +127,32 @@ const eltcheetos = User.create({
     username: "eltcheetos",
     email: "paizstos11012001@gmail.com",
     pswd: "azerty",
-    chara: ["Gentil", "Méchant"]
+    chara: ["Gentil,Méchant"]
 });
 
-console.log(eltcheetos.name);
-/*
 const barrel = User.create({ 
     username: "barrel",
     email: "paizstos@gmail.com",
     pswd: "azerty",
-    chara: "Méchant"
+    chara: ["Méchant"]
 });
 
 const Jojo = User.create({ 
     username: "Jojo",
     email: "test@gmail.com",
-    pswd: "test",
+    pswd: "test"
 });
-/*
+
+const Baloo = User.create({
+    username: 'Baloo',
+    email: 'Baloo@ours.com',
+    pswd: 'oursson',
+    chara: ["Gentil,Attentionné,Lent"]
+})
+
 const contact = Contact.create({
-    id: "eltcheetos",
+    name: "eltcheetos",
     known: "barrel"
-});
-*/
+});*/
+
 module.exports = db;
