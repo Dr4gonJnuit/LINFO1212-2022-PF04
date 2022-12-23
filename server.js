@@ -11,6 +11,8 @@ var session = require('express-session');
 var https = require('https');
 var fs = require('fs');
 
+const bcrypt = require('bcrypt');
+
 // mise en place
 app.set('view engine', 'ejs');
 app.set('views', __dirname + '/static');
@@ -123,7 +125,7 @@ app.get('/login', async (req, res) => {
         const listChara = await dbs.char.findAll();
         res.render('login.ejs', {chara: chara.chara, listChara: listChara});
     } else {
-        res.render('login.ejs', {chara: null, listChara: null});
+        res.render('login.ejs', {chara: null, listChara: []});
     }
 });
 
@@ -142,12 +144,17 @@ app.post('/newUser', async (req, res) => {
         // vérification du mail
         if (email === null) {
             if (req.body.mdp === req.body.mdpCopy) {
-                let newUser = await dbs.users.create({ 
-                    username: req.body.username,
-                    email: req.body.email,
-                    pswd: req.body.mdp,
+                // hash du mdp
+                bcrypt.genSalt(10, function(err, salt) {
+                    bcrypt.hash(req.body.mdp, salt, async(err, hash) => {
+                        let newUser = await dbs.users.create({ 
+                            username: req.body.username,
+                            email: req.body.email,
+                            pswd: hash
+                        });
+                    });
                 });
-                console.log("None error : " + newUser.username);
+
                 req.session.username = req.body.username;
                 req.session.notif = "Bienvenue sur notre site " + req.session.username + " !";
                 console.log('connected');
@@ -175,15 +182,19 @@ app.post('/connection', async (req, res) => {
     let user = await dbs.users.findOne({ where: { username: req.body.username } });
 
     if (user !== null) {
-        if (user.pswd === req.body.mdp) {
-            req.session.UserDB = user;
-            req.session.username = req.body.username;
-            res.redirect('/user_page');
-        } else {
-            console.log("Nom d'utilisateur inexistant ou mauvais mot de passe. 1");
-            req.session.notif = "Nom d'utilisateur inexistant ou mauvais mot de passe. ";
-            res.redirect('/');
-        }
+
+        bcrypt.compare(req.body.mdp, user.pswd, function(err, result) {
+            if (result) {
+                req.session.UserDB = user;
+                req.session.username = req.body.username;
+                res.redirect('/user_page');
+            } else {
+                console.log("Nom d'utilisateur inexistant ou mauvais mot de passe. 1");
+                req.session.notif = "Nom d'utilisateur inexistant ou mauvais mot de passe. ";
+                res.redirect('/');
+            }
+        });
+        
     } else {
         console.log("Nom d'utilisateur inexistant ou mauvais mot de passe. 2");
         req.session.notif = "Nom d'utilisateur inexistant ou mauvais mot de passe. ";
