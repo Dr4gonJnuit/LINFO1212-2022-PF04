@@ -19,7 +19,6 @@ app.use(express.static(__dirname + "/static"));
 
 // chargement de la base de données 
 const dbs = require("./database.js");
-const { Op } = require("sequelize");
 
 // test de la connection à la DB
 try {
@@ -72,22 +71,21 @@ app.get('/user_page', async (req, res) => {
 });
 
 // page de connection
-app.get('/login', async (req, res) => {
+app.get('/login', function (req, res) {
+    res.render('login.ejs')
+});
 
-    let connected = req.session.username;
-    if (connected) {
-        const chara = await dbs.users.findOne({ where: { username: connected } });
-        res.render('login.ejs', {chara: chara.chara});
-    } else {
-        res.render('login.ejs', {chara: '[]'});
-    }
-    
+app.get('/param', function (req, res) {
+    res.render('parametre.ejs', {
+        connecte : "Se déconnecter"
+    })
 });
 
 // création du compte
 app.post('/newUser', async (req, res) => {
 
     const user = await dbs.users.findOne({ where: { username: req.body.username } });
+    req.session.UserDB = user;
     console.log(user);
     const email = await dbs.users.findOne({ where: { email: req.body.email } });
     console.log(email);
@@ -102,6 +100,7 @@ app.post('/newUser', async (req, res) => {
                     username: req.body.username,
                     email: req.body.email,
                     pswd: req.body.mdp,
+                    chara: req.body.characteristic
                 });
                 console.log("None error : " + newUser.username);
                 req.session.username = req.body.username;
@@ -132,6 +131,7 @@ app.post('/connection', async (req, res) => {
 
     if (user !== null) {
         if (user.pswd === req.body.mdp) {
+            req.session.UserDB = user;
             req.session.username = req.body.username;
             res.redirect('/user_page');
         } else {
@@ -146,150 +146,104 @@ app.post('/connection', async (req, res) => {
     }
 });
 
-app.post('/addCharToUser', async (req, res) => {
+app.post('/miseAJour', async (req, res) => {
+
+    dbs.users.update({ username: req.body.username,
+        email: req.body.email,
+        pswd: req.body.mdp,
+        chara: req.body.characteristic}, {where : {username : req.session.username}});
+
+    res.redirect('/');
     
-    const characteristiqueUser = await dbs.users.findOne({ where: { username: req.session.username } });
-    const characteristique = await dbs.char.findOne({ where: { name: req.body.characteristic } });
 
-    console.log(req.body.characteristic);
+});
 
-    let verif = true;
-    let arrChar = [];
+app.get('/message', function (req, res) {
 
-    console.log("Usr chara" + characteristiqueUser.chara);
+    res.render('message', {
+        logine: req.session.username,
+        cont:req.session.contact,
+        connecte : 'Se déconnecter',
+        listmessages3 : req.session.listmsg
+    });
+});
 
-    if (!(characteristiqueUser.chara === null)) {
-        for (const element of characteristiqueUser.chara) {
-            if (element === req.body.characteristic) {
-                verif = false;
-            }
-            arrChar.push(element);
-            console.log(element);
-            console.log(arrChar);
-        }
+app.post('/write', async (req, res) => {
+
+
+    req.session.contact = req.body.contacts
+    let listmessages1 = await dbs.messages.findAll({where : {from_send : req.session.username, to_send: req.body.contacts }});
+    let listmessages2 = await dbs.messages.findAll({where : {from_send :req.body.contacts  , to_send : req.session.username}});
+    let listmessages3 = listmessages1.concat(listmessages2);
+    listmessages3 = listmessages3.sort((a,b) => a.createdAt - b.createdAt);
+    req.session.listmsg = listmessages3;
+
+    res.redirect('/message');
+    
+});
+
+app.post('/sendmsg', async (req, res) => {
+
+    try {
+    console.log('ok 1');
+    let newMsg = await dbs.messages.create({
+        from_send: req.session.username,
+        msg: req.body.msg,
+        snd_time: new Date("05 October 2011 14:48 UTC").toISOString(),
+        to_send: req.session.contact
+    });
+    console.log("None error : " + newMsg.msg);
+    req.session.listmsg.push(newMsg);
+    }catch(e){
+        console.log(e);
+        console.log(req.session.contact);
     }
 
-    console.log(arrChar);
+    console.log('ok 2');
+    //let listmessages1 = await dbs.messages.findAll({where : {id : req.session.username, to_send: req.body.contacts }});
+    //let listmessages2 = await dbs.messages.findAll({where : {id :req.body.contacts  , to_send : req.session.username}});
+    //let listmessages3 = listmessages1.concat(listmessages2);
+    //listmessages3 = listmessages3.sort((a,b) => a.createdAt - b.createdAt);
+    //req.session.listmsg = listmessages3;
+    res.redirect('/message') //, {
+        //logine: req.session.username,
+        //cont:req.session.contact,
+        //connecte : 'Se déconnecter',
+        //listmessages3 : listmessages3
+   // });
+    
+});
 
-    if (verif) {
-        if (characteristique === null) {
-            let newChara = await dbs.char.create({
-                name: req.body.characteristic
-            });
-            console.log("Insertion d'une nouvelle charactéristique");
-        }
 
-        arrChar.push(req.body.characteristic);
-        arrChar.sort();
+// doesn't work I think
+app.post('/addCharToUser', async (req, res) => {
+    
+    const characteristique = await dbs.users.findOne({ where: { chara: req.body.characteristic } });
 
-        console.log(arrChar);
-
-        let newCharaUser = await dbs.users.update({
-            chara: arrChar
-        }, { 
-            where: { username: req.session.username } 
+    if (characteristique === null) {
+        let newChara = await dbs.chara.create({
+            name: req.body.characteristic
         });
-        res.redirect('/login');
+        res.redirect('/login', chara);
     } else {
         req.session.notif = "Vous avez déjà cette charactéristique.";
         res.redirect('/user_page');
     }
 });
+//
 
 // page de recherche de partenaire
 app.get('/recherche', function (req, res) {
-
-    if (req.session.username) {
-        res.render('recherche.ejs', {
-            logine: req.session.username,
-            connecte : 'Se déconnecter',
-            arrayOfPartLisi: null
-        });
-    } else {
-        res.render('home.ejs');
-    }
-});
-
-app.post('/rechPart', async (req, res) => {
-
-    let arrPotenCont = [];
-    let numberOfChara = req.body.number;
-
-    const user = await dbs.users.findOne({ where: { username: req.session.username } });
-
-    const allUser = await dbs.users.findAll({
-        where: {
-            [Op.not] : [
-                { username: req.session.username }
-            ]
-        }
-    });
-
-    if (!(allUser === null)) { 
-        for (const userPot of allUser) {
-
-            if (userPot.chara === null && numberOfChara === "0") { 
-                arrPotenCont.push(userPot);
-                continue;
-            } else if (userPot.chara === null) {
-                continue;
-            }
-
-            let incr = 0;
-            for (const chara of userPot.chara) {
-                for (const charaUser of user.chara) {
-                    if (chara === charaUser) {
-                        incr++;
-                    }
-                }
-                if (numberOfChara <= incr && !arrPotenCont.includes(userPot)) {                    
-                    arrPotenCont.push(userPot);
-                }
-            }
-        }
-    }
-
-    let arrayOfPartLisi = [];
-    for (const part of arrPotenCont) {
-        arrayOfPartLisi.push(["N," + part.username, "C," + part.chara]);
-    }
-
-    console.log(arrayOfPartLisi);
-    
-    res.render('recherche.ejs', {
-        logine: req.session.username,
-        connecte : 'Se déconnecter',
-        arrayOfPartLisi: arrayOfPartLisi
-    });
-    
-});
-
-// ajouter un contact
-app.post("/ajoutContact", async (req, res) => {
-
-    const nameOfContact = req.body.PotPart;
-
-    for (const name of nameOfContact) {
-        await dbs.contacts.create({
-            id: req.session.username,
-            know: name
-        });
-    }
-    
-    res.render('user_page.ejs', {
-        logine: req.session.username,
-        connecte : 'Se déconnecter'
-    });
+    res.render('recherche.ejs')
 });
 
 // Se déconnecter
-app.get("/disconnect", function(req, res) {
-
-    if (req.session.username === undefined) {
+app.get("/disconnect", function(req,res){
+    if (req.session.username === undefined){
         req.session.notif = "Connectez vous";
         res.redirect('/login');
     } else {
-        req.session.username = undefined;
+        req.session.username=undefined;
         req.session.notif = "Merci de votre visite !";
         res.redirect("/")
     }

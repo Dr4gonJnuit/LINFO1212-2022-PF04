@@ -6,12 +6,40 @@
 
     <header>
         <nav class = 'navDeco'> 
-            <p><%= logine %><p>
+            <a href="/disconnect"> <%= connecte %> </a>
         </nav>
         <!-- probably nothing here -->
     </header>
 
     <body>
+        <script src='js/daynight'></script>
+        <form action="miseAJour" method="post" class ="center">
+            <br>
+            <label for="username">Entrez votre nouveau nom d'utilisateur</label> 
+            <input type="text" name="username" placeholder = "Christos" required>
+            <br><br>
+            <label for="email">Entrez votre nouvel Email</label>
+            <input type="email" name="email" placeholder = "Christos@123.com" required>
+            <br><br>
+            <label for="mdp">Entrez votre nouveau mot de passe</label>
+            <input type="password" name="mdp" required>
+            <br><br>
+            <label for="mdpCopy">Entrez à nouveau votre nouveau mot de passe</label>
+            <input type="password" name="mdpCopy" required> 
+            <br><br>
+
+            <select name="characteristic" id="characteristic-select">
+                <option value="Gentil">Gentil</option>
+                <option value="Méchant">Méchant</option>
+            </select> 
+            <br><br>
+            <button type="submit" >Mettre à jour mon compte</button>
+        </form>
+        <br><br>
+
+        <form action="miseAJour" method="post" class ="center">
+            <button type="submit" >Supprimer mon compte</button>
+        </form>
 
     </body>
 </html>

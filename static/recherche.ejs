@@ -2,34 +2,17 @@
 <html>
     <head>
         <%- include('partial/head.ejs'); %>
-        <script type="text/javascript" src="js/affichagePotPart.js"></script>
     </head>
 
-    <body onload="affichagePotPart()">
+    <body>
         <script src='js/daynight'></script>
         <header>
-            <nav class = 'navDeco'>
-                <a href="/login"> <%= logine %> </a>
-                <a href="/disconnect"> <%= connecte %> </a>
-            </nav>
+            <!-- probably nothing here -->
         </header>
-
-        <form action="rechPart" method="post">
-            <input id="numberOfChara" type="number" name="number" min="0" value="0">
-            <button type="submit">Recherche partenaire(s) potentiel(le)(s)</button>
-        </form>
 
         <p>Préférence en commun</p>
 
         <p>Personne trouvées</p>
-
-        <div id="partPotText" hidden><%= arrayOfPartLisi %></div>
-
-        <form action="ajoutContact" method="post">
-            <div id="partPot"></div>
-            <label for="ajouPartPot">Ajouter vos futurs contacts : </label>
-            <button type="submit" id="ajouPartPot">Clique sur moi</button>
-        </form>
 
     </body>
 </html>

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <%- include('partial/head.ejs'); %>
+    </head>
+
+    <body>
+        <script src='js/daynight'></script>
+        <header>
+            <nav class = 'navDeco'> 
+                <a href="/param"> <%= logine %></a>
+                <a href="/disconnect"> <%= connecte %> </a>
+
+            </nav>
+            <!-- probably nothing here -->
+        </header>
+
+        <div id="messages">
+            <h1 class="center"> <%= cont %> </h1>
+                
+            <ul>
+                <% listmessages3.forEach(function(message) { %>
+                    <li> <p class="namemsg"> <%= message.from_send %>  </p> <%= message.msg %>  </li>
+                <% }); %>
+            </ul>
+        </div>
+        <br><br>
+        <div id="message">
+            <form action="sendmsg" method="post" class ="center">
+                <label for="msg">Ecrivez votre message :</label>
+                <textarea id="message" name="msg"></textarea>
+
+                <br><br>
+                <button type="submit" > Envoyer </button>
+            </form>
+        </div>
+
+
+
+    </body>
+</html>

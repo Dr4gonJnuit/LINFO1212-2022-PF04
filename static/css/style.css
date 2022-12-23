@@ -2,8 +2,6 @@ body {
     background-color: rgb(190, 44, 44);
 }
 
-/* classes */
-
 .navDeco{
     vertical-align: center;
     color: #333333;
@@ -19,6 +17,7 @@ body {
     border-right: 1px solid #333333;
 }
 
+/* classes */
 .center {
     text-align: center;
 }

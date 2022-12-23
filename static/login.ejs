@@ -21,19 +21,19 @@
             <label for="mdpCopy">Entrez à nouveau votre mot de passe</label>
             <input type="password" name="mdpCopy" required> 
             <br><br>
-            <button type="submit" >Créer un compte</button>
-        </form>
 
-        <form action="addCharToUser" method="post">
             <select name="characteristic" id="characteristic-select">
                 <option value="Gentil">Gentil</option>
                 <option value="Méchant">Méchant</option>
-                <option value="Test">Test</option>
-            </select>
-            
-            <button onclick="ajout_c(document.getElementById('characteristic-select').value)">test</button>
+            </select> 
+            <br><br>
+            <button type="submit" >Créer un compte</button>
         </form>
-                
-        <div id="chara_poss"><%= chara %> </div>
+
+        
+            
+            
+        
+        <div id="chara_poss"></div>
     </body>
 </html>

@@ -38,24 +38,15 @@ User.init({
         type: DataTypes.STRING,
         allowNull: false
     },
-    chara: {
-        type: DataTypes.STRING,
+    chara: [{
+        type: DataTypes.ARRAY(DataTypes.STRING),
         allowNull: true,
-        /*
+        defaultValue: [""],
         references: {
             model: Characteristique,
             key: 'name'
-        },
-        */
-        get() {
-            const value = this.getDataValue('chara');
-
-            return value ? value.split(',') : null;
-        },
-        set(val) {
-            val ? this.setDataValue('chara', val.join(',')) : null;
         }
-    }
+    }]
 }, {
     sequelize,
     modelName: 'Users'
@@ -89,27 +80,33 @@ Contact.init({
 
 Message.init({
     id: {
+        type: DataTypes.INTEGER,
+        autoIncrement: true,
+        primaryKey: true
+        //references: {
+          //  model: User,
+            //key: 'username'
+        //}
+    },
+    from_send: {
         type: DataTypes.STRING,
-        primaryKey: true,
-        references: {
-            model: User,
-            key: 'username'
-        }
+        allowNull: false,
     },
     msg: {
         type: DataTypes.STRING,
         allowNull: false,
     },
-    snd_time: {
+   snd_time: {
         type: DataTypes.DATE,
-        allowNull: false
+        allowNull: false,
     },
     to_send: {
         type: DataTypes.STRING,
-        references: {
-            model: Contact,
-            key: 'known'
-        }
+        allowNull: false
+        //references: {
+          //  model: User,
+            //key: 'username'
+        //}
     }
 }, {
     sequelize,
@@ -123,48 +120,48 @@ db.users = User;
 db.contacts = Contact;
 db.messages = Message; 
 
-db.char = Characteristique;
+db.chara = Characteristique;
 
 //db.sequelize.sync({force: true});
-/*
+
 (async () => {
     await db.sequelize.sync({ force: true });
   });
-
-
-const ca = Characteristique.create({
-    name: "Gentil"
-});
-
-const ca2 = Characteristique.create({
-    name: "Méchant"
-});
 
 const eltcheetos = User.create({ 
     username: "eltcheetos",
     email: "paizstos11012001@gmail.com",
     pswd: "azerty",
-    chara: ["Gentil", "Méchant"]
+    chara: "Gentil"
 });
 
 console.log(eltcheetos.name);
-/*
+
 const barrel = User.create({ 
     username: "barrel",
     email: "paizstos@gmail.com",
     pswd: "azerty",
-    chara: "Méchant"
+    chara: "Gentil"
 });
 
-const Jojo = User.create({ 
-    username: "Jojo",
-    email: "test@gmail.com",
-    pswd: "test",
-});
-/*
 const contact = Contact.create({
     id: "eltcheetos",
     known: "barrel"
 });
-*/
+
+const contact2 = Contact.create({
+    id: "barrel",
+    known: "eltcheetos"
+});
+
+const message1 = Message.create({
+    from_send: "barrel",
+    msg: "Hi, it's barrel",
+    snd_time: 2022-12-01,
+    to_send:"eltcheetos"
+});
+
+
+  
+
 module.exports = db;
