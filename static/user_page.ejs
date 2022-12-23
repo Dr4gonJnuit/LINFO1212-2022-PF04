@@ -8,28 +8,37 @@
         <script src='js/daynight'></script>
         <header>
             <nav class = 'navDeco'> 
-                <a href="/login"> <%= logine %></a>
+                <a href="/login"> <%= logine %> </a>
                 <a href="/disconnect"> <%= connecte %> </a>
-
             </nav>
-            <!-- probably nothing here -->
         </header>
 
         <div class="container">
-            <!-- put code here -->
+            
             <div id="contacts">
                 <!-- zone des contacts -->
-                <h1 class="center">Contacts</h1>
+                <a href="/recherche" style="text-decoration: none; color: initial;"><h1 class="center">Contacts</h1></a>
                 
                 <ul>
                     <% listContacts.forEach(function(contact) { %>
-                        <li> <a href = <!-- Nous ne savons pas quoi mettre ici --> >  Ecrire </a> <%= contact.known %> </li>
+                        <li>  <%= contact.known %> </li>
                     <% }); %>
                 </ul>
             </div>
 
-            <div id="messages">
-                <!-- zone des messages --> 
+            <form action="write" method="post" class ="center">
+                <select name="contacts" id="characteristic-select">
+                    <% listContacts.forEach(function(contact) { %>
+                        <!-- <li>  <%= contact.known %> </li> -->
+                        <option value= <%= contact.known %> > <%= contact.known %> </option>
+                    <% }); %>
+                </select>
+
+                <button type="submit"> Ecrire </button>
+            </form> 
+
+            <!-- <div id="messages">
+                zone des messages
                 <p>
                     Random funniest message
                     Random funniest message
@@ -72,7 +81,7 @@
                     Random funniest message
                     Random funniest message
                 </p>
-            </div>
+            </div>-->
     </div>
 
     </body>
