@@ -203,7 +203,7 @@ app.get('/recherche', function (req, res) {
         res.render('recherche.ejs', {
             logine: req.session.username,
             connecte : 'Se déconnecter',
-            test: null
+            arrayOfPartLisi: null
         });
     } else {
         res.render('home.ejs');
@@ -228,7 +228,12 @@ app.post('/rechPart', async (req, res) => {
     if (!(allUser === null)) { 
         for (const userPot of allUser) {
 
-            if (userPot.chara === null) { continue; }
+            if (userPot.chara === null && numberOfChara === "0") { 
+                arrPotenCont.push(userPot);
+                continue;
+            } else if (userPot.chara === null) {
+                continue;
+            }
 
             let incr = 0;
             for (const chara of userPot.chara) {
@@ -244,19 +249,37 @@ app.post('/rechPart', async (req, res) => {
         }
     }
 
-    let test = [];
-    for (const iterator of arrPotenCont) {
-        test.push([iterator.username, iterator.chara]);
+    let arrayOfPartLisi = [];
+    for (const part of arrPotenCont) {
+        arrayOfPartLisi.push(["N," + part.username, "C," + part.chara]);
     }
 
-    console.log(test);
-
+    console.log(arrayOfPartLisi);
+    
     res.render('recherche.ejs', {
         logine: req.session.username,
         connecte : 'Se déconnecter',
-        test: test 
+        arrayOfPartLisi: arrayOfPartLisi
     });
     
+});
+
+// ajouter un contact
+app.post("/ajoutContact", async (req, res) => {
+
+    const nameOfContact = req.body.PotPart;
+
+    for (const name of nameOfContact) {
+        await dbs.contacts.create({
+            id: req.session.username,
+            know: name
+        });
+    }
+    
+    res.render('user_page.ejs', {
+        logine: req.session.username,
+        connecte : 'Se déconnecter'
+    });
 });
 
 // Se déconnecter

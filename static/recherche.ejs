@@ -5,7 +5,7 @@
         <script type="text/javascript" src="js/affichagePotPart.js"></script>
     </head>
 
-    <body>
+    <body onload="affichagePotPart()">
         <script src='js/daynight'></script>
         <header>
             <nav class = 'navDeco'>
@@ -23,7 +23,13 @@
 
         <p>Personne trouvées</p>
 
-        <div id="partPot" onload="affichagePotPart(test)"></div>
+        <div id="partPotText" hidden><%= arrayOfPartLisi %></div>
+
+        <form action="ajoutContact" method="post">
+            <div id="partPot"></div>
+            <label for="ajouPartPot">Ajouter vos futurs contacts : </label>
+            <button type="submit" id="ajouPartPot">Clique sur moi</button>
+        </form>
 
     </body>
 </html>
