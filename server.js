@@ -10,7 +10,6 @@ var bodyParser = require("body-parser");
 var session = require('express-session');
 var https = require('https');
 var fs = require('fs');
-//const Bcrypt = require("bcryptjs");  --> Ne fonctionne pas
 
 // mise en place
 app.set('view engine', 'ejs');
@@ -43,51 +42,95 @@ app.use(session({
 
 // page principale
 app.get('/', function (req, res) {
-    if(req.session.username){
-        res.render('user_page',{
+
+    if (req.session.username) {
+        res.render('user_page.ejs', {
             logine: req.session.username,
-            connecte : 'Se déconnecter'
-        })}
-    else{
-        res.render('home', {
+            connecte: 'Se déconnecter'
+        });
+    } else {
+        res.render('home.ejs', {
             logine: "Bienvenue sur notre site"
-        })
+        });
     }
 });
 
 // page de l'utilisateur
 app.get('/user_page', async (req, res) => {
-    if(req.session.username){
-        let listContacts = await dbs.contacts.findAll({where : {id : req.session.username}})
+    
+    if (req.session.username) {
 
+        let listContacts = await dbs.contacts.findAll({ where: { name: req.session.username } });
 
-        res.render('user_page.ejs',{
+        res.render('user_page.ejs', {
             logine: req.session.username,
-            connecte : 'Se déconnecter',
-            listContacts : listContacts
-        })}
-    else{
-        res.render('home')
+            connecte: 'Se déconnecter',
+            listContacts: listContacts
+        });
+    } else {
+        res.render('home.ejs');
     }
+});
+
+app.get('/message', function (req, res) {
+
+    res.render('message', {
+        logine: req.session.username,
+        cont: req.session.contact,
+        connecte: 'Se déconnecter',
+        listmessages3: req.session.listmsg
+    });
+});
+
+app.post('/write', async (req, res) => {
+
+    req.session.contact = req.body.contacts;
+    let listmessages1 = await dbs.messages.findAll({ where: { from_send: req.session.username, to_send: req.body.contacts } });
+    let listmessages2 = await dbs.messages.findAll({ where: { from_send: req.body.contacts, to_send: req.session.username } });
+    let listmessages3 = listmessages1.concat(listmessages2);
+    listmessages3 = listmessages3.sort((a,b) => a.createdAt - b.createdAt);
+    req.session.listmsg = listmessages3;
+
+    res.redirect('/message');
+});
+
+app.post('/sendmsg', async (req, res) => {
+
+    try {
+        let newMsg = await dbs.messages.create({
+            from_send: req.session.username,
+            msg: req.body.msg,
+            snd_time: new Date("05 October 2011 14:48 UTC").toISOString(),
+            to_send: req.session.contact
+        });
+        console.log("None error : " + newMsg.msg);
+        req.session.listmsg.push(newMsg);
+    } catch(e) {
+        console.log(e);
+        console.log(req.session.contact);
+    }
+
+    res.redirect('/message');
 });
 
 // page de connection
 app.get('/login', async (req, res) => {
 
     let connected = req.session.username;
+
     if (connected) {
         const chara = await dbs.users.findOne({ where: { username: connected } });
         res.render('login.ejs', {chara: chara.chara});
     } else {
-        res.render('login.ejs', {chara: '[]'});
+        res.render('login.ejs', {chara: null});
     }
-    
 });
 
 // création du compte
 app.post('/newUser', async (req, res) => {
 
     const user = await dbs.users.findOne({ where: { username: req.body.username } });
+    req.session.UserDB = user;
     console.log(user);
     const email = await dbs.users.findOne({ where: { email: req.body.email } });
     console.log(email);
@@ -97,7 +140,7 @@ app.post('/newUser', async (req, res) => {
 
         // vérification du mail
         if (email === null) {
-            if (req.body.mdp === req.body.mdpCopy){
+            if (req.body.mdp === req.body.mdpCopy) {
                 let newUser = await dbs.users.create({ 
                     username: req.body.username,
                     email: req.body.email,
@@ -106,7 +149,7 @@ app.post('/newUser', async (req, res) => {
                 console.log("None error : " + newUser.username);
                 req.session.username = req.body.username;
                 req.session.notif = "Bienvenue sur notre site " + req.session.username + " !";
-                console.log('connected')
+                console.log('connected');
                 res.redirect('/user_page');
             } else {
                 req.session.notif = "Les deux mots de passe ne correspondent pas";
@@ -132,15 +175,16 @@ app.post('/connection', async (req, res) => {
 
     if (user !== null) {
         if (user.pswd === req.body.mdp) {
+            req.session.UserDB = user;
             req.session.username = req.body.username;
             res.redirect('/user_page');
         } else {
-            console.log("Nom d'utilisateur inexistant ou mauvais mot de passe. 1")
+            console.log("Nom d'utilisateur inexistant ou mauvais mot de passe. 1");
             req.session.notif = "Nom d'utilisateur inexistant ou mauvais mot de passe. ";
             res.redirect('/');
         }
     } else {
-        console.log("Nom d'utilisateur inexistant ou mauvais mot de passe. 2")
+        console.log("Nom d'utilisateur inexistant ou mauvais mot de passe. 2");
         req.session.notif = "Nom d'utilisateur inexistant ou mauvais mot de passe. ";
         res.redirect('/');
     }
@@ -269,17 +313,32 @@ app.post("/ajoutContact", async (req, res) => {
 
     const nameOfContact = req.body.PotPart;
 
-    for (const name of nameOfContact) {
-        await dbs.contacts.create({
-            id: req.session.username,
-            know: name
+    try {
+        let iferror = nameOfContact.join(',');
+
+        for (const nameC of nameOfContact) {
+
+            console.log(nameC);
+    
+            let contact = await dbs.users.findOne({ where: { username: nameC } })
+    
+            console.log(contact.username);
+    
+            console.log(req.session.username);
+            
+            let newContact = await dbs.contacts.create({
+                name: req.session.username,
+                known: contact.username
+            });
+        }
+    } catch (error) {
+        let newContact = await dbs.contacts.create({
+            name: req.session.username,
+            known: nameOfContact
         });
     }
     
-    res.render('user_page.ejs', {
-        logine: req.session.username,
-        connecte : 'Se déconnecter'
-    });
+    res.redirect('user_page');
 });
 
 // Se déconnecter
@@ -291,7 +350,7 @@ app.get("/disconnect", function(req, res) {
     } else {
         req.session.username = undefined;
         req.session.notif = "Merci de votre visite !";
-        res.redirect("/")
+        res.redirect("/");
     }
 })
 
