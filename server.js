@@ -120,9 +120,10 @@ app.get('/login', async (req, res) => {
 
     if (connected) {
         const chara = await dbs.users.findOne({ where: { username: connected } });
-        res.render('login.ejs', {chara: chara.chara});
+        const listChara = await dbs.char.findAll();
+        res.render('login.ejs', {chara: chara.chara, listChara: listChara});
     } else {
-        res.render('login.ejs', {chara: null});
+        res.render('login.ejs', {chara: null, listChara: null});
     }
 });
 
@@ -189,6 +190,19 @@ app.post('/connection', async (req, res) => {
         res.redirect('/');
     }
 });
+
+app.post('/addChar', async (req, res) => {
+
+    const listChara = await dbs.char.findOne({ where: { name: req.body.newChara } });
+
+    if (!listChara) {
+        let chara = await dbs.char.create({
+            name: req.body.newChara
+        });
+    }
+
+    res.redirect('/login');
+})
 
 app.post('/addCharToUser', async (req, res) => {
     

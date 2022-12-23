@@ -24,14 +24,16 @@
             <button type="submit" >Créer un compte</button>
         </form>
 
+        <form action="addChar" method="post">
+            <input type="text" name="newChara">
+            <button type="submit">Ajoutez une nouvelle caractéristique</button>
+        </form>
+
         <form action="addCharToUser" method="post">
             <select name="characteristic" id="characteristic-select">
-                <option value="Gentil">Gentil</option>
-                <option value="Méchant">Méchant</option>
-                <option value="Test">Test</option>
-                <option value="Rapide">Rapide</option>
-                <option value="Lent">Lent</option>
-                <option value="Attentionné">Attentionné</option>
+                <% listChara.forEach(function(chara) { %>
+                    <option value= <%= chara.name %> > <%= chara.name %> </option>
+                <% }); %>
             </select>
             
             <button onclick="ajout_c(document.getElementById('characteristic-select').value)">test</button>
